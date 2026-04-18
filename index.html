@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TaskMaster — Mes tâches quotidiennes</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%236C63FF'/><text x='50%25' y='55%25' dominant-baseline='central' text-anchor='middle' font-size='18'>✓</text></svg>" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ===========================
+       SIDEBAR
+       =========================== -->
+  <aside class="sidebar">
+
+    <div class="sidebar-logo">
+      <div class="logo-icon">✓</div>
+      <div class="logo-text">Task<span>Master</span></div>
+    </div>
+
+    <!-- Date du jour -->
+    <div class="sidebar-date">
+      <div class="jour" id="date-jour">--</div>
+      <div class="mois" id="date-mois">Chargement...</div>
+    </div>
+
+    <!-- Stats / filtres -->
+    <div class="sidebar-stats">
+      <div class="sidebar-stats-titre">Vue d'ensemble</div>
+      <div class="stat-item" data-filtre="tous">
+        <span class="stat-label"><span class="stat-dot all"></span> Toutes</span>
+        <span class="stat-count" id="cnt-tous">0</span>
+      </div>
+      <div class="stat-item" data-filtre="todo">
+        <span class="stat-label"><span class="stat-dot active"></span> À faire</span>
+        <span class="stat-count" id="cnt-actives">0</span>
+      </div>
+      <div class="stat-item" data-filtre="termine">
+        <span class="stat-label"><span class="stat-dot done"></span> Terminées</span>
+        <span class="stat-count" id="cnt-termines">0</span>
+      </div>
+      <div class="stat-item" data-filtre="urgentes">
+        <span class="stat-label"><span class="stat-dot urgent"></span> Urgentes</span>
+        <span class="stat-count" id="cnt-urgentes">0</span>
+      </div>
+    </div>
+
+    <!-- Barre de progression -->
+    <div class="sidebar-progress">
+      <div class="prog-titre">Progression du jour</div>
+      <div class="prog-bar-wrap">
+        <div class="prog-bar" id="prog-bar"></div>
+      </div>
+      <div class="prog-label">
+        <span id="prog-detail">0 / 0</span>
+        <span id="prog-pct">0%</span>
+      </div>
+    </div>
+
+    <!-- Catégories -->
+    <div class="sidebar-cats">
+      <div class="cats-titre">Catégories</div>
+      <ul class="cat-list" id="cat-list" style="list-style:none;padding:0;"></ul>
+    </div>
+
+  </aside>
+
+  <!-- ===========================
+       HEADER
+       =========================== -->
+  <header>
+    <div class="header-title">
+      <h1 id="header-h1">Mes tâches</h1>
+      <p id="header-sub">Organisez votre journée efficacement</p>
+    </div>
+    <div class="header-actions">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="recherche" placeholder="Rechercher une tâche..." />
+      </div>
+      <div class="vue-switch">
+        <button class="vue-btn actif" id="vue-kanban" title="Vue Kanban">⊞</button>
+        <button class="vue-btn" id="vue-liste" title="Vue Liste">☰</button>
+      </div>
+      <button class="btn-ajouter" id="btn-ajouter">
+        <span class="plus">+</span> Nouvelle tâche
+      </button>
+    </div>
+  </header>
+
+  <!-- ===========================
+       MAIN
+       =========================== -->
+  <main>
+
+    <!-- Chips filtre rapide -->
+    <div class="vue-rapide">
+      <button class="chip actif" data-filtre="tous">Toutes</button>
+      <button class="chip" data-filtre="todo">📋 À faire</button>
+      <button class="chip" data-filtre="en-cours">⚡ En cours</button>
+      <button class="chip" data-filtre="termine">✅ Terminées</button>
+      <button class="chip" data-filtre="urgentes">🔴 Urgentes</button>
+    </div>
+
+    <!-- VUE KANBAN -->
+    <div class="colonnes" id="kanban-view">
+
+      <!-- Colonne À faire -->
+      <div class="colonne">
+        <div class="col-header">
+          <div class="col-titre">
+            <span class="col-dot todo"></span>
+            À faire
+          </div>
+          <span class="col-count" id="col-todo-count">0</span>
+        </div>
+        <div class="taches-list" id="col-todo-list"></div>
+        <button class="btn-add-col" data-statut="todo">+ Ajouter une tâche</button>
+      </div>
+
+      <!-- Colonne En cours -->
+      <div class="colonne">
+        <div class="col-header">
+          <div class="col-titre">
+            <span class="col-dot prog"></span>
+            En cours
+          </div>
+          <span class="col-count" id="col-en-cours-count">0</span>
+        </div>
+        <div class="taches-list" id="col-en-cours-list"></div>
+        <button class="btn-add-col" data-statut="en-cours">+ Ajouter une tâche</button>
+      </div>
+
+      <!-- Colonne Terminée -->
+      <div class="colonne">
+        <div class="col-header">
+          <div class="col-titre">
+            <span class="col-dot done"></span>
+            Terminées
+          </div>
+          <span class="col-count" id="col-termine-count">0</span>
+        </div>
+        <div class="taches-list" id="col-termine-list"></div>
+        <button class="btn-add-col" data-statut="termine">+ Ajouter une tâche</button>
+      </div>
+
+    </div>
+
+    <!-- VUE LISTE -->
+    <div class="liste-view" id="liste-view">
+      <div id="liste-container"></div>
+    </div>
+
+  </main>
+
+</div>
+
+<!-- ===========================
+     MODAL NOUVELLE/EDITION TÂCHE
+     =========================== -->
+<div class="modal-overlay" id="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titre-h2">
+    <div class="modal-header">
+      <h2 id="modal-titre-h2">✨ Nouvelle tâche</h2>
+      <button class="modal-close" id="modal-close" title="Fermer">✕</button>
+    </div>
+
+    <form id="form-tache" novalidate>
+
+      <div class="form-group">
+        <label for="f-titre">Titre de la tâche *</label>
+        <input type="text" id="f-titre" placeholder="Que devez-vous faire ?" required />
+      </div>
+
+      <div class="form-group">
+        <label for="f-desc">Description (optionnel)</label>
+        <textarea id="f-desc" placeholder="Plus de détails..."></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="f-categorie">Catégorie</label>
+          <select id="f-categorie">
+            <option value="travail">💼 Travail</option>
+            <option value="perso">🏠 Personnel</option>
+            <option value="sante">❤️ Santé</option>
+            <option value="courses">🛒 Courses</option>
+            <option value="autre">✨ Autre</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="f-priorite">Priorité</label>
+          <select id="f-priorite">
+            <option value="haute">🔴 Haute</option>
+            <option value="moyenne" selected>🟡 Moyenne</option>
+            <option value="basse">🟢 Basse</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="f-statut">Statut</label>
+          <select id="f-statut">
+            <option value="todo">📋 À faire</option>
+            <option value="en-cours">⚡ En cours</option>
+            <option value="termine">✅ Terminée</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="f-echeance">Échéance</label>
+          <input type="date" id="f-echeance" />
+        </div>
+      </div>
+
+      <div class="form-group" style="display:flex;align-items:center;gap:8px;flex-direction:row;">
+        <input type="checkbox" id="f-urgente" style="width:16px;height:16px;accent-color:var(--red);cursor:pointer;" />
+        <label for="f-urgente" style="text-transform:none;letter-spacing:0;font-size:0.88rem;color:var(--text);cursor:pointer;">
+          🔴 Marquer comme urgente
+        </label>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-annuler" id="btn-annuler">Annuler</button>
+        <button type="submit" class="btn-sauver">Sauvegarder</button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<!-- Toasts -->
+<div class="toast-container" id="toast-container"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
