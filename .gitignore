@@ -1,0 +1,2 @@
+MONGODB_URI=mongodb+srv://Admin:Abbale0000@cluster0.cot2pmg.mongodb.net/taskmaster?retryWrites=true&w=majority&appName=Cluster03
+FRONTEND_URL=http://localhost:5500
